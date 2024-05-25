@@ -76,13 +76,14 @@
         <a href="/" class="home-button">Главная страница</a>
     </div>
 
-    <div class="container text-center">
-        <h1 class="mt-5">Voice Recorder</h1>
-        <button id="recordButton" class="btn btn-primary btn-lg dark-button">Record for 3 Seconds</button>
-        <p id="status" >Click the button to start recording...</p>
-        <p id="wordMessage" class="hidden">Recording word:</p>
-        <p id="word" class="hidden"></p>
+    <div class="container">
+        <h1>Случайные слова</h1>
+        <div class="button-group">
+            <button id="load-words-button" class="dark-button">Загрузить слова</button>
+        </div>
+        <div id="words-container" class="words-container"></div>
     </div>
+    
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -109,10 +110,23 @@
 
         try {
             const userId = getCookie('user_id');
-            const wordResponse = await fetch(`/api/randomwords`, {
-                method: 'GET', // Изменяем метод запроса на GET
+            document.getElementById('load-words-button').addEventListener('click', () => {
+    fetch('/api/randomwords')
+        .then(response => response.json())
+        .then(data => {
+            const wordsContainer = document.getElementById('words-container');
+            wordsContainer.innerHTML = '';
+            data.words.forEach(word => {
+                const wordElement = document.createElement('p');
+                wordElement.textContent = word;
+                wordsContainer.appendChild(wordElement);
             });
-            words = await wordResponse.json();
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+        });
+});
+
 
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(stream);
