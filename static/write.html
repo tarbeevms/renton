@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -66,6 +66,15 @@
     .hidden {   
         display: none;
     }
+
+    .container {
+        text-align: center;
+        margin-top: 100px;
+    }
+
+    .words-container {
+        margin-top: 20px;
+    }
 </style>
 <body>
     <div class="navbar">
@@ -77,8 +86,9 @@
         <button id="recordButton" class="btn btn-primary btn-lg dark-button">Record for 3 Seconds</button>
         <p id="status">Click the button to start recording...</p>
         <p id="wordMessage" class="hidden">Скажите слово обычной громкостью, четко его проговаривая: <span id="word"></span></p>
-        <p id="randomWords" class="hidden">Случайные слова: <span id="randomWord1"></span>, <span id="randomWord2"></span>, <span id="randomWord3"></span></p>
     </div>
+
+    <div class="words-container" id="words-container"></div>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -87,146 +97,46 @@
 
     <!-- Script -->
     <script>
-        let mediaRecorder;
         let currentWordIndex = 0;
         let words = [];
 
         async function fetchRandomWords() {
             try {
                 const wordResponse = await fetch(`/api/randomwords`, {
-                    method: 'GET', 
+                    method: 'GET',
                 });
-                words = await wordResponse.json();
+                const data = await wordResponse.json();
+                words = data.words;
             } catch (error) {
                 console.error('Error fetching words:', error);
             }
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            await fetchRandomWords();
-            const randomWordsElement = document.getElementById('randomWords');
-            const randomWord1Element = document.getElementById('randomWord1');
-            const randomWord2Element = document.getElementById('randomWord2');
-            const randomWord3Element = document.getElementById('randomWord3');
-
-            if (randomWordsElement && randomWord1Element && randomWord2Element && randomWord3Element) {
-                randomWord1Element.textContent = words[0];
-                randomWord2Element.textContent = words[1];
-                randomWord3Element.textContent = words[2];
-                randomWordsElement.classList.remove('hidden');
-            }
-        });
+        async function loadWordsContainer() {
+            const wordsContainer = document.getElementById('words-container');
+            wordsContainer.innerHTML = '';
+            words.forEach(word => {
+                const wordElement = document.createElement('p');
+                wordElement.textContent = word;
+                wordsContainer.appendChild(wordElement);
+            });
+        }
 
         document.getElementById('recordButton').addEventListener('click', async () => {
-            const recordButton = document.getElementById('recordButton');
-            const statusElement = document.getElementById('status');
             const wordMessage = document.getElementById('wordMessage');
             const wordElement = document.getElementById('word');
-            let countdown = 3;
-            let recordingCount = 0;
-            const maxRecordings = 3;
-            const audioChunks = [];
 
-            recordButton.classList.add('hidden');
-            wordMessage.classList.add('hidden'); 
+            if (wordMessage) wordMessage.classList.add('hidden');
 
-            try {
-                const userId = getCookie('user_id');
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
+            await fetchRandomWords();
+            await loadWordsContainer();
 
-                const countdownInterval = setInterval(() => {
-                    statusElement.textContent = `Recording starts in ${countdown}...`;
-                    countdown--;
-
-                    if (countdown < 0) {
-                        clearInterval(countdownInterval);
-                        startRecording();
-                    }
-                }, 1000);
-
-                function startRecording() {
-                    if (recordingCount >= maxRecordings) {
-                        sendRecordings();
-                        return;
-                    }
-
-                    statusElement.textContent = `Recording... (${recordingCount + 1}/${maxRecordings})`;
-                    const chunks = [];
-
-                    mediaRecorder.ondataavailable = event => chunks.push(event.data);
-                    mediaRecorder.start();
-
-                    let recordingTime = 3;
-                    const recordingInterval = setInterval(() => {
-                        statusElement.textContent = `Recording... ${recordingTime} (${recordingCount + 1}/${maxRecordings})`;
-                        recordingTime--;
-
-                        if (recordingTime < 0) {
-                            clearInterval(recordingInterval);
-                            mediaRecorder.stop();
-                        }
-                    }, 1000);
-
-                    mediaRecorder.onstop = () => {
-                        audioChunks.push(new Blob(chunks, { type: 'audio/wav' }));
-                        recordingCount++;
-
-                        if (recordingCount < maxRecordings) {
-                            continueRecording();
-                        } else {
-                            sendRecordings();
-                        }
-                    };
-                }
-
-                async function continueRecording() {
-                    wordElement.textContent = words[currentWordIndex];
-                    wordMessage.classList.remove('hidden');
-                    currentWordIndex = (currentWordIndex + 1) % words.length; 
-                    await startRecording();
-                }
-
-                async function sendRecordings() {
-                    statusElement.textContent = 'All recordings done, sending data...';
-                    const formData = new FormData();
-
-                    audioChunks.forEach((chunk, index) => {
-                        formData.append(`audio${index + 1}`, chunk, `recording${index + 1}.wav`);
-                    });
-
-                    try {
-                        const response = await fetch(`/api/voice/${userId}`, {
-                            method: 'POST',
-                            body: formData,
-                        });
-
-                        if (!response.ok) {
-                            throw new Error(`Server responded with status ${response.status}`);
-                        }
-
-                        const result = await response.json();
-                        statusElement.textContent = result.message || 'Recording sent successfully!';
-                        recordButton.classList.remove('hidden');
-                    } catch (error) {
-                        statusElement.textContent =                     'Error sending recording: ' + error.message;
-                        recordButton.classList.remove('hidden');
-                    }
-                }
-            } catch (error) {
-                statusElement.textContent = 'Error accessing microphone: ' + error.message;
-                recordButton.classList.remove('hidden');
+            if (words.length > 0) {
+                wordElement.textContent = words[currentWordIndex];
+                if (wordMessage) wordMessage.classList.remove('hidden');
+                currentWordIndex = (currentWordIndex + 1) % words.length;
             }
         });
-
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (
-                parts.length === 2) return parts.pop().split(';').shift();
-            return null;
-        }
     </script>
 </body>
 </html>
-
