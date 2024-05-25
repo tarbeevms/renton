@@ -111,7 +111,7 @@
             });
 
             document.getElementById('load-words-button').addEventListener('click', () => {
-                fetch('/api/random-words')
+                fetch('/api/randomwords')
                     .then(response => response.json())
                     .then(data => {
                         const wordsContainer = document.getElementById('words-container');

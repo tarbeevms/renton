@@ -142,11 +142,14 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+
+                    if (data.succes) {
+                window.location.href = "localhost:8081/";
+                 }
+
                     document.getElementById('result').style.display = 'block';
                     document.getElementById('result').textContent = JSON.stringify(data, null, 2);
-                    if (data.succes) {
-                window.location.href = "localhost:8081";
-                 }
+
                     
                 })
                 .catch((error) => { 
