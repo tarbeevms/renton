@@ -93,7 +93,7 @@
         async function fetchRandomWords() {
             try {
                 const wordResponse = await fetch(`/api/randomwords`, {
-                    method: 'GET', 
+                    method: 'GET',
                 });
                 words = await wordResponse.json();
             } catch (error) {
@@ -116,7 +116,7 @@
             const audioChunks = [];
 
             recordButton.classList.add('hidden');
-            wordMessage.classList.add('hidden'); 
+            wordMessage.classList.add('hidden');
 
             try {
                 const userId = getCookie('user_id');
@@ -170,11 +170,11 @@
 
                 async function continueRecording() {
                     wordElement.textContent = words[currentWordIndex];
-                    if (wordMessage) wordMessage.classList.remove('hidden');
+                    wordMessage.classList.remove('hidden');
 
-                        currentWordIndex = (currentWordIndex + 1) % words.length; // Циклическое обновление индекса слова
-                        await startRecording();
-                    }
+                    currentWordIndex = (currentWordIndex + 1) % words.length; // Circular update of word index
+                    await startRecording();
+                }
 
                 async function sendRecordings() {
                     statusElement.textContent = 'All recordings done, sending data...';
@@ -211,8 +211,7 @@
         function getCookie(name) {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
-            if (
-                parts.length === 2) return parts.pop().split(';').shift();
+            if (parts.length === 2) return parts.pop().split(';').shift();
             return null;
         }
     </script>
