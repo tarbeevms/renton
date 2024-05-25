@@ -169,15 +169,12 @@
                 }
 
                 async function continueRecording() {
-                    currentWordIndex++;
-                    if (currentWordIndex >= words.length) {
-                        currentWordIndex = 0;
-                    }
                     wordElement.textContent = words[currentWordIndex];
-                    wordMessage.classList.remove('hidden'); 
+                    if (wordMessage) wordMessage.classList.remove('hidden');
 
-                    await startRecording();
-                }
+                        currentWordIndex = (currentWordIndex + 1) % words.length; // Циклическое обновление индекса слова
+                        await startRecording();
+                    }
 
                 async function sendRecordings() {
                     statusElement.textContent = 'All recordings done, sending data...';
