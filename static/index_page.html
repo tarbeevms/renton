@@ -3,83 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   
     <title>Заглавная страница</title>
-    <style>body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        background-color: #f0f0f0;
-    }
-    
-    .navbar {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        background-color: #343a40;
-        padding: 10px 20px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .navbar a {
-        color: white;
-        text-decoration: none;
-        margin-right: 20px;
-        padding: 10px 15px;
-        border-radius: 4px;
-    }
-    .navbar a:hover {
-        background-color: #23272b;
-    }
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: calc(100vh - 60px);
-        text-align: center;
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        margin: 20px;
-    }
-    .container h1 {
-        margin-bottom: 20px;
-    }
-    .button-group {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    .dark-button {
-        padding: 10px 20px;
-        background-color: #343a40;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-    }
-    .dark-button:hover {
-        background-color: #23272b;
-    }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .navbar {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: #343a40;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            padding: 10px 15px;
+            border-radius: 4px;
+        }
+        .navbar a:hover {
+            background-color: #23272b;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 60px);
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+        }
+        .container h1 {
+            margin-bottom: 20px;
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .dark-button {
+            padding: 10px 20px;
+            background-color: #343a40;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .dark-button:hover {
+            background-color: #23272b;
+        }
     </style>
 </head>
 <body>
     <div class="navbar">
         <a href="/" class="home-button">Главная страница</a>
         <a href="/register" class="dark-button right-button">Регистрация</a>
-        <a href="/login" class="dark-button right-button">Вход в аккаунт</a>
-        <a href="/logout" class="dark-button right-button">Выход</a>
-
+        <a id="login-button" href="/login" class="dark-button right-button">Вход в аккаунт</a>
+        <a id="logout-button" href="#" class="dark-button right-button">Выход</a>
     </div>
     
     <div class="container">
         <h1>Добро пожаловать</h1>
         <div class="button-group">
-
             <a href="/voice-record" class="dark-button">Запись голос</a>
         </div>
     </div>
+    
+    <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginButton = document.getElementById('login-button');
+            const logoutButton = document.getElementById('logout-button');
+            const userLoggedIn = getCookie('user_id');
+            if (userLoggedIn) {
+                loginButton.textContent = userLoggedIn;
+                loginButton.href = "#";
+                logoutButton.style.display = "block";
+            } else {
+                logoutButton.style.display = "none";
+            }
+
+            logoutButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                document.cookie = 'user_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                location.reload();
+            });
+        });
+    </script>
 </body>
 </html>
