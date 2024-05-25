@@ -26,16 +26,17 @@ func main() {
 	voiceRepo := voice.NewMySQLRepository(mysqlDB)
 	voiceLogic := logic.NewVoiceLogic(voiceRepo)
 
-	handlers := handlers.NewHandlers(voiceLogic)
+	h := handlers.NewHandlers(voiceLogic)
 
 	// Инициализация маршрутизатора
 	router := mux.NewRouter()
 
 	// Определение маршрутов
-	router.HandleFunc("/api/register", handlers.RegisterHandler).Methods("POST")
-	router.HandleFunc("/api/login", handlers.LoginHandler).Methods("POST")
-	router.HandleFunc("/api/voice/{user-id}", handlers.VoiceCreationHandler).Methods("POST")
-	router.HandleFunc("/api/voice/{user-id}", handlers.VoiceUpdateHandler).Methods("PUT")
+	router.HandleFunc("/api/register", h.RegisterHandler).Methods("POST")
+	router.HandleFunc("/api/login", h.LoginHandler).Methods("POST")
+	router.HandleFunc("/api/voice/{user-id}", h.VoiceCreationHandler).Methods("POST")
+	router.HandleFunc("/api/voice/{user-id}", h.VoiceUpdateHandler).Methods("PUT")
+	router.HandleFunc("/api/randomwords", handlers.WordsHandler).Methods("GET")
 
 	// Путь к статическим файлам
 	staticDir := "../../static"
@@ -59,8 +60,13 @@ func main() {
 	})
 
 	// Определение маршрута для страницы write.html
-	router.HandleFunc("/write", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/voice-record", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, filepath.Join(staticDir, "write.html"))
+	})
+
+	// Определение маршрута для страницы write.html
+	router.HandleFunc("/pay", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, filepath.Join(staticDir, "pay.html"))
 	})
 
 	// Начало прослушивания сервера

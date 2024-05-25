@@ -6,9 +6,6 @@ import (
 	"myapp/internal/voice"
 	"myapp/pkg/io"
 	"net/http"
-
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 )
 
 // Handlers содержит обработчики HTTP-запросов
@@ -45,7 +42,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// Устанавливаем куки-файл в ответе сервера
 	http.SetCookie(w, cookie)
-	// Возвращаем успешный ответ
+	// Возвращаем успешный ответ)
 	io.WriteJSON(w, http.StatusOK, map[string]string{"message": "User registered successfully"})
 }
 
@@ -87,36 +84,22 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 // VoiceCreationHandler обрабатывает запрос на создание голосовых записей
 func (h *Handlers) VoiceCreationHandler(w http.ResponseWriter, r *http.Request) {
-	// Получаем идентификатор пользователя из URL
-	vars := mux.Vars(r)
-	userID, err := uuid.Parse(vars["user-id"])
+	userID, audio1, audio2, audio3, err := h.logic.ProcessVoiceRecordingsRequest(r)
 	if err != nil {
-		io.SendError(w, "Invalid note ID", http.StatusBadRequest)
-		return
-	}
-
-	// Читаем голосовые записи из тела запроса
-	type voiceRequest struct {
-		Audio1 []byte `json:"audio1"`
-		Audio2 []byte `json:"audio2"`
-		Audio3 []byte `json:"audio3"`
-	}
-	var request voiceRequest
-	err = io.ReadJSON(r, &request)
-	if err != nil {
-		io.SendError(w, "Error reading request body", http.StatusBadRequest)
+		io.SendError(w, err.Error(), http.StatusBadRequest)
+		log.Println(err)
 		return
 	}
 
 	// Создаем голосовые записи
-	err = h.logic.CreateVoiceRecordings(userID, request.Audio1, request.Audio2, request.Audio3)
+	err = h.logic.CreateVoiceRecordings(userID, audio1, audio2, audio3)
 	if err != nil {
 		io.SendError(w, "Error creating voice recordings", http.StatusInternalServerError)
 		return
 	}
 
 	// Возвращаем успешный ответ
-	io.WriteJSON(w, http.StatusOK, map[string]string{"message": "Voice recordings created successfully"})
+	io.SendError(w, "Voice recordings created successfully", http.StatusOK)
 }
 
 // VoiceUpdateHandler обрабатывает запрос на перезапись голосовых записей

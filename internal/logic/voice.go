@@ -1,12 +1,15 @@
 package logic
 
 import (
+	"database/sql"
 	"errors"
+	"io/ioutil"
 	"myapp/internal/voice"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 )
 
 // VoiceLogic содержит логику для обработки голосовых записей
@@ -72,6 +75,15 @@ func generateAccountNumber() string {
 
 // RegisterUser регистрирует нового пользователя
 func (vl *VoiceLogic) RegisterUser(phone, password, firstname, surname string) (string, error) {
+	// Проверяем, существует ли пользователь с таким номером телефона
+	existingUser, err := vl.repository.GetUserByPhone(phone)
+	if err != sql.ErrNoRows {
+		return "", err
+	}
+	if existingUser != nil {
+		return "", errors.New("user with this phone number already exists")
+	}
+
 	// Генерируем уникальный идентификатор пользователя
 	userID := uuid.New().String()
 
@@ -85,7 +97,7 @@ func (vl *VoiceLogic) RegisterUser(phone, password, firstname, surname string) (
 	}
 
 	// Сохраняем учетные данные в репозитории
-	err := vl.repository.CreateUser(user)
+	err = vl.repository.CreateUser(user)
 	if err != nil {
 		return "", err
 	}
@@ -125,4 +137,54 @@ func (vl *VoiceLogic) GetUserByPhone(phone string) (*voice.User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+// ProcessVoiceRecordingsRequest обрабатывает запрос на создание или обновление голосовых записей
+func (vl *VoiceLogic) ProcessVoiceRecordingsRequest(r *http.Request) (uuid.UUID, []byte, []byte, []byte, error) {
+	// Парсим multipart/form-data
+	err := r.ParseMultipartForm(10 << 20) // 10 MB
+	if err != nil {
+		return uuid.UUID{}, nil, nil, nil, err
+	}
+
+	// Получаем идентификатор пользователя из URL
+	vars := mux.Vars(r)
+	userID, err := uuid.Parse(vars["user-id"])
+	if err != nil {
+		return uuid.UUID{}, nil, nil, nil, errors.New("invalid user ID")
+	}
+
+	// Читаем файлы из формы
+	audio1, err := readFileFromRequest(r, "audio1")
+	if err != nil {
+		return uuid.UUID{}, nil, nil, nil, err
+	}
+
+	audio2, err := readFileFromRequest(r, "audio2")
+	if err != nil {
+		return uuid.UUID{}, nil, nil, nil, err
+	}
+
+	audio3, err := readFileFromRequest(r, "audio3")
+	if err != nil {
+		return uuid.UUID{}, nil, nil, nil, err
+	}
+
+	return userID, audio1, audio2, audio3, nil
+}
+
+// readFileFromRequest читает файл из запроса
+func readFileFromRequest(r *http.Request, fieldName string) ([]byte, error) {
+	file, _, err := r.FormFile(fieldName)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	fileBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return fileBytes, nil
 }
