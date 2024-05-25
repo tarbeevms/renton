@@ -5,52 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./static/stylelog.css">
     <title>Вход</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #f0f0f0;
-    }
-    .container {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .form-group {
-        margin-bottom: 15px;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-    }
-    .form-group input {
-        width: 100%;
-        padding: 8px;
-        box-sizing: border-box;
-    }
-    .form-group .dark-button {
-        padding: 10px 15px;
-        background-color: #343a40;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    .form-group .dark-button:hover {
-        background-color: #23272b;
-    }
-    .result {
-        margin-top: 20px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }</style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f0f0;
+            padding-top: 60px; /* Добавлено для учета высоты navbar */
+        }
+
+        .navbar {
+            position: fixed; /* Изменено для размещения navbar сверху */
+            top: 0; /* Указывает, что navbar должен быть прижат к верхней границе страницы */
+            width: 100%; /* Расширяет navbar на всю ширину страницы */
+            display: flex;
+            justify-content: space-between; /* Изменено для размещения элементов справа */
+            align-items: center;
+            background-color: #343a40;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            padding: 10px 15px;
+            border-radius: 4px;
+        }
+
+        .navbar a:hover {
+            background-color: #23272b;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
+            width: 80%; /* Уменьшена ширина контейнера */
+            max-width: 400px; /* Максимальная ширина контейнера */
+            min-width: 300px;
+            position: absolute; /* Добавлено для позиционирования контейнера */
+            top: 80px; /* Отступ от верхнего края страницы */
+            left: 50%; /* Расположение по горизонтали */
+            transform: translateX(-50%); /* Центрирование контейнера по горизонтали */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: calc(100% - 16px); /* Увеличена ширина полей ввода */
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .form-group .dark-button {
+            width: 100%; /* Увеличена ширина кнопки */
+            padding: 10px 15px;
+            background-color: #343a40;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .form-group .dark-button:hover {
+            background-color: #23272b;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
+    <div class="navbar">
+        <a href="/" class="home-button">Главная страница</a>
+
+    </div>
+
+
     <div class="container">
         <h1>Вход</h1>
         <form id="loginForm">
@@ -68,29 +113,31 @@
         </form>
         <div id="result" class="result" style="display:none;"></div>
     </div>
-    <script>document.getElementById('loginForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        const phone = document.getElementById('phone').value;
-        const password = document.getElementById('password').value;
-        
-        const data = { phone: phone, password: password };
-        
-        fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('result').style.display = 'block';
-            document.getElementById('result').textContent = JSON.stringify(data, null, 2);
-        })
-        .catch((error) => {
-            console.error('Ошибка:', error);
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+
+            const data = { phone: phone, password: password };
+
+            fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch((error) => {
+                console.error('Ошибка:', error);
+            });
         });
-    });</script>
+    </script>
 </body>
 </html>
