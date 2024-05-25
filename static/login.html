@@ -145,8 +145,16 @@
             })
             .then(response => response.json())
             .then(data => {
+
+
+
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+
+
+                if (data.success) {
+                window.location.href = "localhost:8081/";
+                 }
             })
             .catch((error) => {
                 console.error('Ошибка:', error);
