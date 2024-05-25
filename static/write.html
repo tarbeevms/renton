@@ -16,6 +16,24 @@
         height: 100vh;
         background-color: #f8f9fa;
     }
+    .navbar {
+            display: flex;
+            justify-content: space-between; /* Изменено для размещения элементов справа */
+            align-items: center;
+            background-color: #343a40;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            padding: 10px 15px;
+            border-radius: 4px;
+        }
+        .navbar a:hover {
+            background-color: #23272b;
+        }
 
     #recordButton {
         margin-top: 20px;
@@ -37,6 +55,15 @@
 
 </style>
 <body>
+    <div class="navbar">
+        <a href="/" class="home-button">Главная страница</a>
+        <div> <!-- Новый div для элементов справа -->
+            <a href="/register" class="dark-button">Регистрация</a>
+            <a id="login-button" href="/login" class="dark-button">Вход в аккаунт</a>
+            <a id="logout-button" href="#" class="dark-button">Выход</a>
+        </div>
+    </div>
+
     <div class="container text-center">
         <h1 class="mt-5">Voice Recorder</h1>
         <button id="recordButton" class="btn btn-primary btn-lg">Record for 3 Seconds</button>
