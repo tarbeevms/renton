@@ -1,0 +1,17 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+}
+
+#recordButton {
+    margin-top: 20px;
+}
+
+#status {
+    margin-top: 20px;
+    font-size: 1.2em;
+}
