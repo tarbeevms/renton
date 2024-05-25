@@ -77,6 +77,7 @@
         <button id="recordButton" class="btn btn-primary btn-lg dark-button">Record for 3 Seconds</button>
         <p id="status">Click the button to start recording...</p>
         <p id="wordMessage" class="hidden">Скажите слово обычной громкостью, четко его проговаривая: <span id="word"></span></p>
+        <p id="randomWords" class="hidden">Случайные слова: <span id="randomWord1"></span>, <span id="randomWord2"></span>, <span id="randomWord3"></span></p>
     </div>
 
     <!-- Bootstrap JS and dependencies -->
@@ -93,7 +94,7 @@
         async function fetchRandomWords() {
             try {
                 const wordResponse = await fetch(`/api/randomwords`, {
-                    method: 'GET',
+                    method: 'GET', 
                 });
                 words = await wordResponse.json();
             } catch (error) {
@@ -103,6 +104,17 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             await fetchRandomWords();
+            const randomWordsElement = document.getElementById('randomWords');
+            const randomWord1Element = document.getElementById('randomWord1');
+            const randomWord2Element = document.getElementById('randomWord2');
+            const randomWord3Element = document.getElementById('randomWord3');
+
+            if (randomWordsElement && randomWord1Element && randomWord2Element && randomWord3Element) {
+                randomWord1Element.textContent = words[0];
+                randomWord2Element.textContent = words[1];
+                randomWord3Element.textContent = words[2];
+                randomWordsElement.classList.remove('hidden');
+            }
         });
 
         document.getElementById('recordButton').addEventListener('click', async () => {
@@ -116,7 +128,7 @@
             const audioChunks = [];
 
             recordButton.classList.add('hidden');
-            wordMessage.classList.add('hidden');
+            wordMessage.classList.add('hidden'); 
 
             try {
                 const userId = getCookie('user_id');
@@ -171,8 +183,7 @@
                 async function continueRecording() {
                     wordElement.textContent = words[currentWordIndex];
                     wordMessage.classList.remove('hidden');
-
-                    currentWordIndex = (currentWordIndex + 1) % words.length; // Circular update of word index
+                    currentWordIndex = (currentWordIndex + 1) % words.length; 
                     await startRecording();
                 }
 
@@ -198,7 +209,7 @@
                         statusElement.textContent = result.message || 'Recording sent successfully!';
                         recordButton.classList.remove('hidden');
                     } catch (error) {
-                        statusElement.textContent = 'Error sending recording: ' + error.message;
+                        statusElement.textContent =                     'Error sending recording: ' + error.message;
                         recordButton.classList.remove('hidden');
                     }
                 }
@@ -211,9 +222,11 @@
         function getCookie(name) {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
+            if (
+                parts.length === 2) return parts.pop().split(';').shift();
             return null;
         }
     </script>
 </body>
 </html>
+
