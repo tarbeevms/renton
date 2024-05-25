@@ -145,11 +145,11 @@
                     document.getElementById('result').style.display = 'block';
                     document.getElementById('result').textContent = JSON.stringify(data, null, 2);
                     if (data.succes) {
-                window.location.replace = "localhost:8081/";
+                window.location.href = "localhost:8081";
                  }
                     
                 })
-                .catch((error) => {
+                .catch((error) => { 
                     console.error('Ошибка:', error);
                 });
                });
