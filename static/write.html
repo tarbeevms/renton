@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,35 +14,72 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
-        background-color: #f8f9fa;
+        background-color: #ffffff;
     }
-
+    .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #030303;
+        padding: 10px 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .navbar a {
+        color: white;
+        text-decoration: none;
+        margin-right: 20px;
+        padding: 10px 15px;
+        border-radius: 4px;
+    }
+    .navbar a:hover {
+        background-color: #23272b;
+    }
+    .text-light {
+        color: white    
+    }
+    .dark-button {
+        padding: 10px 15px;
+        background-color: #343a40;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
     #recordButton {
         margin-top: 20px;
     }
-
     #status {
         margin-top: 20px;
         font-size: 1.2em;
     }
-
     #wordMessage {
         margin-top: 20px;
-        font-size: 1.2em;
     }
-
     .hidden {   
         display: none;
     }
-
 </style>
 <body>
-    <div class="container text-center">
-        <h1 class="mt-5">Voice Recorder</h1>
-        <button id="recordButton" class="btn btn-primary btn-lg">Record for 3 Seconds</button>
-        <p id="status" class="text-muted">Click the button to start recording...</p>
-        <p id="wordMessage" class="text-muted hidden">Say the word clearly with normal volume: <span id="word"></span></p>
+    <div class="navbar">
+        <a href="/" class="home-button">Главная страница</a>
     </div>
+
+    <div class="container">
+        <h1>Случайные слова</h1>
+        <div class="button-group">
+            <button id="load-words-button" class="dark-button">Загрузить слова</button>
+            <button id="recordButton" class="dark-button">Начать запись</button>
+        </div>
+        <div id="words-container" class="words-container"></div>
+        <div id="status" class="status"></div>
+        <div id="wordMessage" class="hidden">
+            <h2 id="word"></h2>
+        </div>
+    </div>
+    
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -62,18 +99,17 @@
             let recordingCount = 0;
             const maxRecordings = 3;
             const audioChunks = [];
-            let mediaRecorder;
-            let currentWordIndex = 0;
-            let words = [];
+
             recordButton.classList.add('hidden');
             wordMessage.classList.add('hidden');
 
             try {
                 const userId = getCookie('user_id');
-                const wordResponse = await fetch(`/api/words/${userId}`, {
-                    method: 'GET', // Изменяем метод запроса на GET
+                const wordResponse = await fetch(`/api/randomwords`, {
+                    method: 'GET',
                 });
                 words = await wordResponse.json();
+                words = words.words; // Assuming the response structure is { words: [...] }
 
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
@@ -89,6 +125,11 @@
                 }, 1000);
 
                 function startRecording() {
+                    // Вывод текущего слова
+                    wordElement.textContent = words[currentWordIndex];
+                    wordMessage.classList.remove('hidden');
+                    wordElement.classList.remove('hidden');
+
                     if (recordingCount >= maxRecordings) {
                         sendRecordings();
                         return;
@@ -123,15 +164,13 @@
                     };
                 }
 
-                async function continueRecording() {
-                    currentWordIndex++;
-                    if (currentWordIndex >= words.length) {
-                        currentWordIndex = 0;
-                    }
+                function continueRecording() {
+                    // Установка слова для текущей записи
+                    currentWordIndex = (currentWordIndex + 1) % words.length;
                     wordElement.textContent = words[currentWordIndex];
                     wordMessage.classList.remove('hidden');
 
-                    await startRecording();
+                    startRecording();
                 }
 
                 async function sendRecordings() {
@@ -165,22 +204,7 @@
                 recordButton.classList.remove('hidden');
             }
         });
-        document.getElementById('load-words-button').addEventListener('click', () => {
-            fetch('/api/words') // Обновляем URL для загрузки слов
-                .then(response => response.json())
-                .then(data => {
-                    const wordsContainer = document.getElementById('words-container');
-                    wordsContainer.innerHTML = '';
-                    data.forEach(word => {
-                        const wordElement = document.createElement('p');
-                        wordElement.textContent = word;
-                        wordsContainer.appendChild(wordElement);
-                    });
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                });
-        });
+
         function getCookie(name) {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
