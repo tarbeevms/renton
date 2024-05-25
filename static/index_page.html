@@ -12,7 +12,7 @@
         }
         .navbar {
             display: flex;
-            justify-content: flex-start;
+            justify-content: space-between; /* Изменено для размещения элементов справа */
             align-items: center;
             background-color: #343a40;
             padding: 10px 20px;
@@ -67,15 +67,17 @@
 <body>
     <div class="navbar">
         <a href="/" class="home-button">Главная страница</a>
-        <a href="/register" class="dark-button right-button">Регистрация</a>
-        <a id="login-button" href="/login" class="dark-button right-button">Вход в аккаунт</a>
-        <a id="logout-button" href="#" class="dark-button right-button">Выход</a>
+        <div> <!-- Новый div для элементов справа -->
+            <a href="/register" class="dark-button">Регистрация</a>
+            <a id="login-button" href="/login" class="dark-button">Вход в аккаунт</a>
+            <a id="logout-button" href="#" class="dark-button">Выход</a>
+        </div>
     </div>
     
     <div class="container">
         <h1>Добро пожаловать</h1>
         <div class="button-group">
-            <a href="/voice-record" class="dark-button">Запись голос</a>
+            <a href="/voice-record" class="dark-button">Запись голоса</a>
         </div>
     </div>
     
