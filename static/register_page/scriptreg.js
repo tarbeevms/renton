@@ -5,14 +5,14 @@ document.getElementById('registerForm').addEventListener('submit', function(even
     const password = document.getElementById('password').value;
     const account = document.getElementById('account').value;
     const surname = document.getElementById('surname').value;
-    const name = document.getElementById('name').value;
+    const name = document.getElementById('firstname').value;
     
     const data = {
         phone: phone,
         password: password,
         account: account,
         surname: surname,
-        name: name
+        firstname: firstname
     };
     
     fetch('/api/register/', {
