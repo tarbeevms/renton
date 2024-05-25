@@ -9,26 +9,27 @@
 </head>
 <style>
     body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f8f9fa;
-}
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f8f9fa;
+    }
 
-#recordButton {
-    margin-top: 20px;
-}
+    #recordButton {
+        margin-top: 20px;
+    }
 
-#status {
-    margin-top: 20px;
-    font-size: 1.2em;
-}
+    #status {
+        margin-top: 20px;
+        font-size: 1.2em;
+    }
 
-.hidden {
-    display: none;
-}
+    .hidden {   
+        display: none;
+    }
+
 </style>
 <body>
     <div class="container text-center">
@@ -112,26 +113,26 @@
                     body: formData,
                 });
 
-                const result = await response.json();
-                statusElement.textContent = result.message || 'Recording sent successfully!';
-                recordButton.classList.remove('hidden'); // Show the button again after sending
-            } catch (error) {
-                statusElement.textContent = 'Error sending recording: ' + error.message;
-                recordButton.classList.remove('hidden'); // Show the button again if there's an error
+                    const result = await response.json();
+                    statusElement.textContent = result.message || 'Recording sent successfully!';
+                    recordButton.classList.remove('hidden'); // Show the button again after sending
+                } catch (error) {
+                    statusElement.textContent = 'Error sending recording: ' + error.message;
+                    recordButton.classList.remove('hidden'); // Show the button again if there's an error
+                }
             }
+        } catch (error) {
+            statusElement.textContent = 'Error accessing microphone: ' + error.message;
+            recordButton.classList.remove('hidden'); // Show the button again if there's an error
         }
-    } catch (error) {
-        statusElement.textContent = 'Error accessing microphone: ' + error.message;
-        recordButton.classList.remove('hidden'); // Show the button again if there's an error
-    }
-});
+    });
 
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return null;
-}
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
 
 </script>
 </html>

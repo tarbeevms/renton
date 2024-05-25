@@ -1,0 +1,19 @@
+services:
+  mysql:
+    image: mysql:8
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: voice
+    volumes:
+      - ./_sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  voice:
+    build:
+      context: ../ # Путь к корневой папке проекта
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql
