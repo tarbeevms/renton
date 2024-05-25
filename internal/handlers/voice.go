@@ -42,7 +42,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// Устанавливаем куки-файл в ответе сервера
 	http.SetCookie(w, cookie)
-	// Возвращаем успешный ответ)
+	// Устанавливаем заголовок Location на главную страницу
 	io.WriteJSON(w, http.StatusOK, map[string]string{"message": "User registered successfully"})
 }
 
