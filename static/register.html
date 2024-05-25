@@ -13,17 +13,13 @@
         background-color: #f0f0f0;
     }
     .navbar {
-            position: fixed; /* Изменено для размещения navbar сверху */
-            top: 0; /* Указывает, что navbar должен быть прижат к верхней границе страницы */
-            width: 100%; /* Расширяет navbar на всю ширину страницы */
             display: flex;
             justify-content: space-between; /* Изменено для размещения элементов справа */
             align-items: center;
-            background-color: #030303;
+            background-color: #343a40;
             padding: 10px 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
         .navbar a {
             color: white;
             text-decoration: none;
@@ -31,24 +27,9 @@
             padding: 10px 15px;
             border-radius: 4px;
         }
-
         .navbar a:hover {
             background-color: #23272b;
         }
-        .text-light {
-
-            colot: white    
-        }
-
-        .dark-button {
-        padding: 10px 15px;
-        background-color: #343a40;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
     .container {
         background-color: white;
         padding: 20px;
@@ -89,6 +70,11 @@
 <body>
     <div class="navbar">
         <a href="/" class="home-button">Главная страница</a>
+        <div> <!-- Новый div для элементов справа -->
+            <a href="/register" class="dark-button">Регистрация</a>
+            <a id="login-button" href="/login" class="dark-button">Вход в аккаунт</a>
+            <a id="logout-button" href="#" class="dark-button">Выход</a>
+        </div>
     </div>
 
 
