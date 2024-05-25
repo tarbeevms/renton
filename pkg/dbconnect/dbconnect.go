@@ -42,7 +42,7 @@ func ConnectToMySQL() (*sql.DB, error) {
 			time.Sleep(retryDelay)
 			continue
 		}
-
+		log.Println("Succesfully connected to MySQL DB.")
 		return db, nil
 	}
 

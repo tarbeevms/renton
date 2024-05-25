@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
 
 	"myapp/internal/handlers"
 	"myapp/internal/logic"
@@ -36,9 +37,35 @@ func main() {
 	router.HandleFunc("/api/voice/{user-id}", handlers.VoiceCreationHandler).Methods("POST")
 	router.HandleFunc("/api/voice/{user-id}", handlers.VoiceUpdateHandler).Methods("PUT")
 
+	// Путь к статическим файлам
+	staticDir := "../../static"
+
+	// Определение маршрута для статических файлов
+	router.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(staticDir))))
+
+	// Определение маршрута для страницы index.html
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, filepath.Join(staticDir, "index_page.html"))
+	})
+
+	// Определение маршрута для страницы register.html
+	router.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, filepath.Join(staticDir, "register.html"))
+	})
+
+	// Определение маршрута для страницы login.html
+	router.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, filepath.Join(staticDir, "login.html"))
+	})
+
+	// Определение маршрута для страницы write.html
+	router.HandleFunc("/write", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, filepath.Join(staticDir, "write.html"))
+	})
+
 	// Начало прослушивания сервера
-	fmt.Println("Server is listening on port 8080...")
-	err = http.ListenAndServe(":8080", router)
+	fmt.Println("Server is listening on port 8081...")
+	err = http.ListenAndServe(":8081", router)
 	if err != nil {
 		log.Fatalf("Could not start server: %v", err)
 	}

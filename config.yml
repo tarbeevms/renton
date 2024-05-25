@@ -1,6 +1,6 @@
 mysql:
   host: mysql
   port: 3306
-  database: notes
+  database: voice
   username: root
   password: root

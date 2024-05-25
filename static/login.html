@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./static/stylelog.css">
+    <title>Вход</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+    }
+    .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    .form-group input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+    .form-group .dark-button {
+        padding: 10px 15px;
+        background-color: #343a40;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .form-group .dark-button:hover {
+        background-color: #23272b;
+    }
+    .result {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }</style>
+</head>
+<body>
+    <div class="container">
+        <h1>Вход</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="phone">Телефон</label>
+                <input type="text" id="phone" name="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="dark-button">Войти</button>
+            </div>
+        </form>
+        <div id="result" class="result" style="display:none;"></div>
+    </div>
+    <script>document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const phone = document.getElementById('phone').value;
+        const password = document.getElementById('password').value;
+        
+        const data = { phone: phone, password: password };
+        
+        fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+        })
+        .catch((error) => {
+            console.error('Ошибка:', error);
+        });
+    });</script>
+</body>
+</html>

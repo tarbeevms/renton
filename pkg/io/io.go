@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -46,6 +47,7 @@ func SendError(w http.ResponseWriter, msg string, status int) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
+	log.Println(err)
 	_, err = w.Write(js)
 	if err != nil {
 		http.Error(w, "Internal Error", http.StatusInternalServerError)

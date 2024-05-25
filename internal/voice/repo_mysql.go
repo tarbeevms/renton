@@ -18,7 +18,7 @@ func NewMySQLRepository(db *sql.DB) UserRepository {
 }
 
 func (r *MySQLRepository) CreateUser(user *User) error {
-	_, err := r.db.Exec("INSERT INTO Credentials (userid, phone_number, password, firstname, surname) VALUES (?, ?, ?, ?, ?)", user.UserID, user.Phone, user.Password, user.Firstname, user.Surname)
+	_, err := r.db.Exec("INSERT INTO Credentials (user_id, phone_number, password, firstname, surname) VALUES (?, ?, ?, ?, ?)", user.UserID, user.Phone, user.Password, user.Firstname, user.Surname)
 	if err != nil {
 		return err
 	}
@@ -27,7 +27,7 @@ func (r *MySQLRepository) CreateUser(user *User) error {
 
 func (r *MySQLRepository) GetUserByPhone(phone string) (*User, error) {
 	var user User
-	err := r.db.QueryRow("SELECT userid, phone_number, password FROM Credentials WHERE phone_number = ?", phone).Scan(&user.UserID, &user.Phone, &user.Password)
+	err := r.db.QueryRow("SELECT user_id, phone_number, password FROM Credentials WHERE phone_number = ?", phone).Scan(&user.UserID, &user.Phone, &user.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (r *MySQLRepository) GetUserByPhone(phone string) (*User, error) {
 }
 
 func (r *MySQLRepository) SaveVoiceRecordings(recordings *VoiceRecording) error {
-	_, err := r.db.Exec("INSERT INTO UsersVoices (userid, voice_sample1, voice_sample2, voice_sample3) VALUES (?, ?, ?, ?)",
+	_, err := r.db.Exec("INSERT INTO UsersVoices (user_id, voice_sample1, voice_sample2, voice_sample3) VALUES (?, ?, ?, ?)",
 		recordings.UserID, recordings.Audio1, recordings.Audio2, recordings.Audio3)
 	if err != nil {
 		return err
@@ -46,7 +46,7 @@ func (r *MySQLRepository) SaveVoiceRecordings(recordings *VoiceRecording) error 
 }
 
 func (r *MySQLRepository) UpdateVoiceRecordings(recordings *VoiceRecording) error {
-	_, err := r.db.Exec("UPDATE UsersVoices SET voice_sample1 = ?, voice_sample2 = ?, voice_sample3 = ? WHERE userid = ?",
+	_, err := r.db.Exec("UPDATE UsersVoices SET voice_sample1 = ?, voice_sample2 = ?, voice_sample3 = ? WHERE user_id = ?",
 		recordings.Audio1, recordings.Audio2, recordings.Audio3, recordings.UserID)
 	if err != nil {
 		return err

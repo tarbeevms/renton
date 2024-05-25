@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"myapp/internal/logic"
 	"myapp/internal/voice"
 	"myapp/pkg/io"
@@ -33,6 +34,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	userID, err := h.logic.RegisterUser(user.Phone, user.Password, user.Firstname, user.Surname)
 	if err != nil {
 		io.SendError(w, "Error registering user", http.StatusInternalServerError)
+		log.Println(err)
 		return
 	}
 	// Создаем куки-файл для сессии пользователя

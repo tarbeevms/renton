@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Recorder</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+   <style>body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+}
+
+#recordButton {
+    margin-top: 20px;
+}
+
+#status {
+    margin-top: 20px;
+    font-size: 1.2em;
+}
+</style>
+</head>
+<body>
+    <div class="container text-center">
+        <h1 class="mt-5">Voice Recorder</h1>
+        <button id="recordButton" class="btn btn-primary btn-lg">Record for 3 Seconds</button>
+        <p id="status" class="text-muted">Click the button to start recording...</p>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>document.getElementById('recordButton').addEventListener('click', async () => {
+        const recordButton = document.getElementById('recordButton');
+        const statusElement = document.getElementById('status');
+        let countdown = 3;
+    
+        // Countdown logic before recording
+        const countdownInterval = setInterval(() => {
+            statusElement.textContent = `Recording starts in ${countdown}...`;
+            countdown--;
+    
+            if (countdown < 0) {
+                clearInterval(countdownInterval);
+                startRecording();
+                recordButton.style.display = 'none'; // Скрыть кнопку после начала записи
+            }
+        }, 1000);
+    });
+    
+    async function startRecording() {
+        const statusElement = document.getElementById('status');
+        statusElement.textContent = 'Recording...';
+    
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            const chunks = [];
+            
+            mediaRecorder.ondataavailable = event => chunks.push(event.data);
+            
+            mediaRecorder.start();
+    
+            // Recording countdown logic
+            let recordingTime = 3;
+            const recordingInterval = setInterval(() => {
+                statusElement.textContent = `Recording... ${recordingTime}`;
+                recordingTime--;
+    
+                if (recordingTime < 0) {
+                    clearInterval(recordingInterval);
+                    mediaRecorder.stop();
+                }
+            }, 1000);
+    
+            mediaRecorder.onstop = async () => {
+                statusElement.textContent = 'Recording stopped, sending data...';
+                const formData = new FormData();
+    
+                for (let i = 0; i < 3; i++) {
+                    const blob = new Blob(chunks, { type: 'audio/wav' });
+                    formData.append(`audio${i + 1}`, blob, `recording${i + 1}.wav`);
+                }
+    
+                try {
+                    const userId = 'your-user-id'; // Replace with actual user ID
+                    const response = await fetch(`/api/voice/${userId}`, {
+                        method: 'POST',
+                        body: formData,
+                    });
+    
+                    const result = await response.json();
+                    statusElement.textContent = result.message || 'Recording sent successfully!';
+                } catch (error) {
+                    statusElement.textContent = 'Error sending recording: ' + error.message;
+                }
+            };
+        } catch (error) {
+            statusElement.textContent = 'Error accessing microphone: ' + error.message;
+        }
+    }
+    </script>
+</body>
+</html>
