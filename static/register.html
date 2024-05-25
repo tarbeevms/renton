@@ -141,9 +141,9 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
+
                     window.location.href = "http://localhost:8081/";  // Добавлен протокол http://
-                }
+
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('result').textContent = JSON.stringify(data, null, 2);
             })
