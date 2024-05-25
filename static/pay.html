@@ -11,17 +11,16 @@
             background-color: #f0f0f0;
         }
         .navbar {
-            position: fixed; /* Изменено для размещения navbar сверху */
-            top: 0; /* Указывает, что navbar должен быть прижат к верхней границе страницы */
-            width: 100%; /* Расширяет navbar на всю ширину страницы */
+            position: fixed;
+            top: 0;
+            width: 100%;
             display: flex;
-            justify-content: space-between; /* Изменено для размещения элементов справа */
+            justify-content: space-between;
             align-items: center;
             background-color: #030303;
             padding: 10px 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
         .navbar a {
             color: white;
             text-decoration: none;
@@ -29,15 +28,6 @@
             padding: 10px 15px;
             border-radius: 4px;
         }
-
-
-        .text-light {
-
-            colot: white    
-        }
-
-
-
         .container {
             display: flex;
             flex-direction: column;
@@ -70,14 +60,17 @@
             display: inline-block;
         }
         .dark-button:hover {
-            background-color: #030303;
+            background-color: #23272b;
+        }
+        .words-container {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="navbar">
         <a href="/" class="home-button">Главная страница</a>
-        <div> <!-- Новый div для элементов справа -->
+        <div>
             <a href="/register" class="dark-button">Регистрация</a>
             <a id="login-button" href="/login" class="dark-button">Вход в аккаунт</a>
             <a id="logout-button" href="#" class="dark-button">Выход</a>
@@ -85,9 +78,11 @@
     </div>
     
     <div class="container">
-        <h1></h1>
+        <h1>Случайные слова</h1>
         <div class="button-group">
-
+            <button id="load-words-button" class="dark-button">Загрузить слова</button>
+        </div>
+        <div id="words-container" class="words-container"></div>
     </div>
     
     <script>
@@ -113,6 +108,23 @@
                 event.preventDefault();
                 document.cookie = 'user_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 location.reload();
+            });
+
+            document.getElementById('load-words-button').addEventListener('click', () => {
+                fetch('/api/random-words')
+                    .then(response => response.json())
+                    .then(data => {
+                        const wordsContainer = document.getElementById('words-container');
+                        wordsContainer.innerHTML = '';
+                        data.words.forEach(word => {
+                            const wordElement = document.createElement('p');
+                            wordElement.textContent = word;
+                            wordsContainer.appendChild(wordElement);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Ошибка:', error);
+                    });
             });
         });
     </script>
