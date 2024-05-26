@@ -149,7 +149,7 @@
                         formData.append('audio1', audioChunks[0], 'recording1.wav');
 
                         try {
-                            const response = await fetch(`/api/voice/${userId}`, {
+                            const response = await fetch(`/api/pay`, {
                                 method: 'POST',
                                 body: formData,
                             });
@@ -159,7 +159,7 @@
                             }
 
                             const result = await response.json();
-                            statusElement.textContent = result.message || 'Запись успешно отправлена!';
+                            statusElement.textContent = `Запись успешно отправлена! Ваш user_id: ${result.user_id}`;
                             recordButton.classList.remove('hidden');
                         } catch (error) {
                             statusElement.textContent = 'Ошибка при отправке записи: ' + error.message;
