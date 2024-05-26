@@ -118,7 +118,7 @@
                             }
 
                             // Отправляем FormData на сервер
-                            fetch('/api/voice', {
+                            fetch(`/api/voice/${userId}`, {
                                 method: 'POST',
                                 body: formData,
                                 headers: {
