@@ -4,8 +4,12 @@ import (
 	"database/sql"
 	"errors"
 	"io/ioutil"
+	"log"
 	"myapp/internal/voice"
 	"net/http"
+	"os"
+	"os/exec"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -25,10 +29,10 @@ func NewVoiceLogic(repository voice.UserRepository) *VoiceLogic {
 // CreateVoiceRecordings создает записи голосовых записей пользователя
 func (vl *VoiceLogic) CreateVoiceRecordings(userID uuid.UUID, audio1, audio2, audio3 []byte) error {
 	recordings := &voice.VoiceRecording{
-		UserID: userID,
-		Audio1: audio1,
-		Audio2: audio2,
-		Audio3: audio3,
+		UserID:        userID,
+		Voice_sample1: audio1,
+		Voice_sample2: audio2,
+		Voice_sample3: audio3,
 	}
 
 	err := vl.repository.SaveVoiceRecordings(recordings)
@@ -42,10 +46,10 @@ func (vl *VoiceLogic) CreateVoiceRecordings(userID uuid.UUID, audio1, audio2, au
 // UpdateVoiceRecordings обновляет записи голосовых записей пользователя
 func (vl *VoiceLogic) UpdateVoiceRecordings(userID uuid.UUID, audio1, audio2, audio3 []byte) error {
 	recordings := &voice.VoiceRecording{
-		UserID: userID,
-		Audio1: audio1,
-		Audio2: audio2,
-		Audio3: audio3,
+		UserID:        userID,
+		Voice_sample1: audio1,
+		Voice_sample2: audio2,
+		Voice_sample3: audio3,
 	}
 
 	err := vl.repository.UpdateVoiceRecordings(recordings)
@@ -171,6 +175,48 @@ func (vl *VoiceLogic) ProcessVoiceRecordingsRequest(r *http.Request) (uuid.UUID,
 	}
 
 	return userID, audio1, audio2, audio3, nil
+}
+
+// GetUsersVoices получает данные о пользователях из базы данных
+func (v *VoiceLogic) GetUsersVoices() ([]*voice.VoiceRecording, error) {
+	users, err := v.repository.GetUsersVoices()
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (vl *VoiceLogic) CompareUserVoices(audio1, audio2 []byte) (float64, error) {
+	// Создаем файлы для .wav файлов в текущей директории
+	audioFilePath1 := "../../internal/logic/audio1.wav"
+	audioFilePath2 := "../../internal/logic/audio2.wav"
+
+	if err := os.WriteFile(audioFilePath1, audio1, 0644); err != nil {
+		return 0, err
+	}
+
+	//defer os.Remove(audioFilePath1)
+
+	if err := os.WriteFile(audioFilePath2, audio2, 0644); err != nil {
+		return 0, err
+	}
+	//defer os.Remove(audioFilePath2)
+
+	// Вызываем питоновскую функцию для сравнения аудиофайлов
+	log.Println(audioFilePath1, audioFilePath2)
+	cmd := exec.Command("python3", "compare_audio.py", "audio1.wav", "audio2.wav")
+	output, err := cmd.Output()
+	if err != nil {
+		return 0, err
+	}
+
+	// Преобразуем вывод в число с плавающей точкой
+	similarity, err := strconv.ParseFloat(string(output), 64)
+	if err != nil {
+		return 0, err
+	}
+
+	return similarity, nil
 }
 
 // readFileFromRequest читает файл из запроса

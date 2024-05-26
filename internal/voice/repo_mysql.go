@@ -37,7 +37,7 @@ func (r *MySQLRepository) GetUserByPhone(phone string) (*User, error) {
 
 func (r *MySQLRepository) SaveVoiceRecordings(recordings *VoiceRecording) error {
 	_, err := r.db.Exec("INSERT INTO UsersVoices (user_id, voice_sample1, voice_sample2, voice_sample3) VALUES (?, ?, ?, ?)",
-		recordings.UserID, recordings.Audio1, recordings.Audio2, recordings.Audio3)
+		recordings.UserID, recordings.Voice_sample1, recordings.Voice_sample2, recordings.Voice_sample3)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (r *MySQLRepository) SaveVoiceRecordings(recordings *VoiceRecording) error 
 
 func (r *MySQLRepository) UpdateVoiceRecordings(recordings *VoiceRecording) error {
 	_, err := r.db.Exec("UPDATE UsersVoices SET voice_sample1 = ?, voice_sample2 = ?, voice_sample3 = ? WHERE user_id = ?",
-		recordings.Audio1, recordings.Audio2, recordings.Audio3, recordings.UserID)
+		recordings.Voice_sample1, recordings.Voice_sample2, recordings.Voice_sample3, recordings.UserID)
 	if err != nil {
 		return err
 	}
@@ -66,4 +66,23 @@ func (r *MySQLRepository) SaveBankAccount(account *BankAccount) error {
 		return err
 	}
 	return nil
+}
+
+// GetUsersVoices получает данные о пользователях из базы данных
+func (r *MySQLRepository) GetUsersVoices() ([]*VoiceRecording, error) {
+	rows, err := r.db.Query("SELECT user_id, voice_sample1, voice_sample2, voice_sample3 FROM UsersVoices")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []*VoiceRecording
+	for rows.Next() {
+		var user VoiceRecording
+		if err := rows.Scan(&user.UserID, &user.Voice_sample1, &user.Voice_sample2, &user.Voice_sample3); err != nil {
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+	return users, nil
 }

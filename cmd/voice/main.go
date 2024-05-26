@@ -37,6 +37,7 @@ func main() {
 	router.HandleFunc("/api/voice/{user-id}", h.VoiceCreationHandler).Methods("POST")
 	router.HandleFunc("/api/voice/{user-id}", h.VoiceUpdateHandler).Methods("PUT")
 	router.HandleFunc("/api/randomwords", handlers.WordsHandler).Methods("GET")
+	router.HandleFunc("/api/pay", h.VoiceVerificationHandler).Methods("POST")
 
 	// Путь к статическим файлам
 	staticDir := "../../static"

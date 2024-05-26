@@ -139,18 +139,19 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
-            .then(data => {
-
-                    window.location.href = "http://localhost:8081/";  // Добавлен протокол http://
-
-                document.getElementById('result').style.display = 'block';
-                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
-            })
-            .catch((error) => {
-                console.error('Ошибка:', error);
-            });
+            .then(response => {
+            if (response.ok) {
+                // Если ответ успешный (статус 200), выполняем редирект
+                window.location.href = "http://localhost:8081/";
+            } else {
+                // Если статус ответа не 200, выводим сообщение об ошибке
+                console.error('Ошибка при регистрации:', response.statusText);
+            }
+        })
+        .catch((error) => {
+            console.error('Ошибка:', error);
         });
-    </script>
+    });
+</script>
 </body>
 </html>

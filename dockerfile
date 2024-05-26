@@ -4,6 +4,9 @@ FROM golang:latest
 # Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /../voice
 
+# Устанавливаем Python и pip для Ubuntu, а также необходимые библиотеки
+RUN apt-get update && apt-get install -y python3 python3-pip python3-venv libsndfile1 ffmpeg
+
 # Копируем файлы go.mod и go.sum
 COPY go.mod go.sum ./
 
@@ -18,6 +21,10 @@ RUN chmod 777 /voice/config.yml
 
 # Переходим в директорию cmd/redditclone
 WORKDIR /voice/cmd/voice
+
+# Создаем и активируем виртуальное окружение Python
+RUN python3 -m venv venv
+RUN /bin/bash -c "source venv/bin/activate && pip install --no-cache-dir -r req.txt"
 
 # Собираем ваше приложение
 RUN go build -o myapp .

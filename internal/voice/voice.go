@@ -19,10 +19,10 @@ type BankAccount struct {
 
 // VoiceRecording структура для хранения информации о голосовых записях пользователя
 type VoiceRecording struct {
-	UserID uuid.UUID `json:"userid"`
-	Audio1 []byte `json:"-"`
-	Audio2 []byte `json:"-"`
-	Audio3 []byte `json:"-"`
+	UserID        uuid.UUID `json:"userid"`
+	Voice_sample1 []byte    `json:"-"`
+	Voice_sample2 []byte    `json:"-"`
+	Voice_sample3 []byte    `json:"-"`
 }
 
 // UserRepository представляет интерфейс для работы с пользователями и их банковскими счетами в базе данных
@@ -32,4 +32,5 @@ type UserRepository interface {
 	SaveVoiceRecordings(recordings *VoiceRecording) error
 	UpdateVoiceRecordings(recordings *VoiceRecording) error
 	SaveBankAccount(account *BankAccount) error
+	GetUsersVoices() ([]*VoiceRecording, error)
 }
